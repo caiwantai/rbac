@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.rbac.mapper.PermissionMapper">
+
+    <resultMap id="permissionMap" type="Permission">
+        <id column="id" property="id" javaType="Long" jdbcType="BIGINT"/>
+        <result column="name" property="name" javaType="String" jdbcType="VARCHAR"/>
+        <result column="expression" property="expression" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+
+    <select id="getPermissionByEmId" resultMap="permissionMap">
+        select t3.id,t3.name,t3.expression  from  employee_role as t1
+        inner join role_permission  as t2 on t1.role_id = t2.role_id
+        inner join permission as t3 on t2.permission_id = t3.id
+        where t1.employee_id  = #{emId}
+    </select>
+
+    <select id="listAll" resultMap="permissionMap" >
+       select id, name ,expression from permission
+    </select>
+    <insert id="insertByRoleId" parameterType="Long">
+        insert into role_permission(role_id,permission_id) values (#{roleId},#{perId})
+    </insert>
+
+    <delete id="deleteById" parameterType="Long">
+        delete from permission where id = #{id}
+    </delete>
+
+    <delete id="deleteByRoleId" parameterType="Long">
+        delete from role_permission where role_id = #{roleId}
+    </delete>
+
+</mapper>

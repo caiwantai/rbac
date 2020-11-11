@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.wolfcode.rbac.mapper.RoleMapper">
+    <resultMap id="permissionMap" type="Permission">
+        <id column="perId" property="id" javaType="Long" jdbcType="BIGINT"/>
+        <result column="PerName" property="name" javaType="String" jdbcType="VARCHAR"/>
+        <result column="expression" property="expression" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="roleMap" type="Role">
+        <id column="id" property="id" javaType="Long" jdbcType="BIGINT"/>
+        <result column="name" property="name" javaType="String" jdbcType="VARCHAR"/>
+        <result column="sn" property="sn" javaType="String" jdbcType="VARCHAR"/>
+        <collection property="permissions" resultMap="permissionMap"/>
+    </resultMap>
+
+    <!--    后面有 ；分号 分页插件 出现语法错误 select  id , name , sn from  department；limit-->
+    <select id="listAll" resultMap="roleMap">
+        select  id , name , sn from  role
+    </select>
+
+    <select id="selectById" parameterType="Long" resultMap="roleMap">
+        select  t1.id , t1.name , t1.sn, t3.id as perId, t3.name as PerName, t3.expression
+        from  role as t1
+        left join role_permission as t2 on t1.id = t2.role_id
+        left join permission as t3 on t2.permission_id = t3.id
+        where t1.id = #{id}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="Long">
+        delete from role where id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="Role" useGeneratedKeys="true" keyProperty="id">
+        insert into role (name,sn) values (#{name},#{sn})
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="Role">
+        update role set name = #{name}, sn = #{sn} where id = #{id}
+    </update>
+
+</mapper>
